@@ -5,8 +5,8 @@ Const AUTHORS As String = DBLSPACE & vbNewLine & _
 "Author:Klay Lo   Methodology Credit to: McCormick   JE McGimpsey "
 Const HEADER As String = "Reactivate Locked Worksheet"
 Const VERSION As String = DBLSPACE & "Version 1.0"
-Const REPBACK As String = DBLSPACE & "This code and related data are for POT internal reference only"
-Const ZHENGLI As String = DBLSPACE & "本程式及其數據僅供保德信公司内參使用，嚴禁外泄或另作他用"
+Const REPBACK As String = DBLSPACE & "This code and related data are for study purpose only"
+Const ZHENGLI As String = DBLSPACE & "本程式及其數據僅供學習使用，嚴禁外泄或另作他用"
 Const ALLCLEAR As String = DBLSPACE & "This worksheet is reactivate!!" & DBLSPACE & "Thank you for your patience" _
 & DBLSPACE & "Please do not save this worksheet after use."
 Const MSGNOPWORDS1 As String = "No Need To Reactivate"

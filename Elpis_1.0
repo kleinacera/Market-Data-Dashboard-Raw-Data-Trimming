@@ -1,0 +1,164 @@
+﻿'2019/7/22 take better raw data access
+Public Sub Eunomia()
+Const DBLSPACE As String = vbNewLine & vbNewLine
+Const AUTHORS As String = DBLSPACE & vbNewLine & _
+"Author:Klay Lo   Methodology Credit to: McCormick   JE McGimpsey "
+Const HEADER As String = "Reactivate Locked Worksheet"
+Const VERSION As String = DBLSPACE & "Version 1.0"
+Const REPBACK As String = DBLSPACE & "This code and related data are for POT internal reference only"
+Const ZHENGLI As String = DBLSPACE & "本程式及其數據僅供保德信公司内參使用，嚴禁外泄或另作他用"
+Const ALLCLEAR As String = DBLSPACE & "This worksheet is reactivate!!" & DBLSPACE & "Thank you for your patience" _
+& DBLSPACE & "Please do not save this worksheet after use."
+Const MSGNOPWORDS1 As String = "No Need To Reactivate"
+Const MSGNOPWORDS2 As String = "No Need To Reactivate2"
+Const MSGTAKETIME As String = "The estimated processing time is 20s!" & DBLSPACE & "Press OK to Continue!"
+Const MSGPWORDFOUND1 As String = "The new password structure is:" & DBLSPACE & "$$" & DBLSPACE & _
+"If the workbook contains 2 password, the process gonna continue."
+Const MSGPWORDFOUND2 As String = "The new password structure is:" & DBLSPACE & "$$" & DBLSPACE & _
+"If the workbook contains 2 password, the process gonna continue."
+Const MSGONLYONE As String = "Make sure it's identical"
+Dim w1 As Worksheet, w2 As Worksheet
+Dim i As Integer, j As Integer, k As Integer, l As Integer
+Dim m As Integer, n As Integer, i1 As Integer, i2 As Integer
+Dim i3 As Integer, i4 As Integer, i5 As Integer, i6 As Integer
+Dim PWord1 As String
+Dim ShTag As Boolean, WinTag As Boolean
+Application.ScreenUpdating = False
+With ActiveWorkbook
+WinTag = .ProtectStructure Or .ProtectWindows
+End With
+ShTag = False
+For Each w1 In Worksheets
+ShTag = ShTag Or w1.ProtectContents
+Next w1
+If Not ShTag And Not WinTag Then
+MsgBox MSGNOPWORDS1, vbInformation, HEADER
+Exit Sub
+End If
+MsgBox MSGTAKETIME, vbInformation, HEADER
+If Not WinTag Then
+Else
+On Error Resume Next
+Do 'dummy do loop
+For i = 65 To 66: For j = 65 To 66: For k = 65 To 66
+For l = 65 To 66: For m = 65 To 66: For i1 = 65 To 66
+For i2 = 65 To 66: For i3 = 65 To 66: For i4 = 65 To 66
+For i5 = 65 To 66: For i6 = 65 To 66: For n = 32 To 126
+With ActiveWorkbook
+.Unprotect Chr(i) & Chr(j) & Chr(k) & _
+Chr(l) & Chr(m) & Chr(i1) & Chr(i2) & _
+Chr(i3) & Chr(i4) & Chr(i5) & Chr(i6) & Chr(n)
+If .ProtectStructure = False And _
+.ProtectWindows = False Then
+PWord1 = Chr(i) & Chr(j) & Chr(k) & Chr(l) & _
+Chr(m) & Chr(i1) & Chr(i2) & Chr(i3) & _
+Chr(i4) & Chr(i5) & Chr(i6) & Chr(n)
+MsgBox Application.Substitute(MSGPWORDFOUND1, _
+"$$", PWord1), vbInformation, HEADER
+Exit Do 'Bypass all for...nexts
+End If
+End With
+Next: Next: Next: Next: Next: Next
+Next: Next: Next: Next: Next: Next
+Loop Until True
+On Error GoTo 0
+End If
+If WinTag And Not ShTag Then
+MsgBox MSGONLYONE, vbInformation, HEADER
+Exit Sub
+End If
+On Error Resume Next
+For Each w1 In Worksheets
+'Attempt clearance with PWord1
+w1.Unprotect PWord1
+Next w1
+On Error GoTo 0
+ShTag = False
+For Each w1 In Worksheets
+'Checks for all clear ShTag triggered to 1 if not.
+ShTag = ShTag Or w1.ProtectContents
+Next w1
+If ShTag Then
+For Each w1 In Worksheets
+With w1
+If .ProtectContents Then
+On Error Resume Next
+Do 'Dummy do loop
+For i = 65 To 66: For j = 65 To 66: For k = 65 To 66
+For l = 65 To 66: For m = 65 To 66: For i1 = 65 To 66
+For i2 = 65 To 66: For i3 = 65 To 66: For i4 = 65 To 66
+For i5 = 65 To 66: For i6 = 65 To 66: For n = 32 To 126
+.Unprotect Chr(i) & Chr(j) & Chr(k) & _
+Chr(l) & Chr(m) & Chr(i1) & Chr(i2) & Chr(i3) & _
+Chr(i4) & Chr(i5) & Chr(i6) & Chr(n)
+If Not .ProtectContents Then
+PWord1 = Chr(i) & Chr(j) & Chr(k) & Chr(l) & _
+Chr(m) & Chr(i1) & Chr(i2) & Chr(i3) & _
+Chr(i4) & Chr(i5) & Chr(i6) & Chr(n)
+MsgBox Application.Substitute(MSGPWORDFOUND2, _
+"$$", PWord1), vbInformation, HEADER
+'leverage finding Pword by trying on other sheets
+For Each w2 In Worksheets
+w2.Unprotect PWord1
+Next w2
+Exit Do 'Bypass all for...nexts
+End If
+Next: Next: Next: Next: Next: Next
+Next: Next: Next: Next: Next: Next
+Loop Until True
+On Error GoTo 0
+End If
+End With
+Next w1
+End If
+MsgBox ALLCLEAR & AUTHORS & VERSION & REPBACK & ZHENGLI, vbInformation, HEADER
+Call removepivotfields
+End Sub
+
+Sub removepivotfields()
+    Dim pvttable As PivotTable
+    Dim pvtfield As PivotField
+    For Each pvttable In ActiveSheet.PivotTables
+        For Each pvtfield In pvttable.RowFields
+            pvtfield.Orientation = xlHidden
+        Next
+    Next
+
+    Dim ws As Worksheet, pt As PivotTable
+    For Each ws In ThisWorkbook.Worksheets
+        For Each pt In ws.PivotTables
+            pt.ClearAllFilters
+        Next
+    Next
+    
+    If ActiveWorkbook.Name = "premiumfee_year.xls" Or ActiveWorkbook.Name = "premiumsource_year.xls" Then
+        Range("D7").Select
+    ElseIf ActiveWorkbook.Name = "newcontract_month.xls" Or ActiveWorkbook.Name = "premiumpayment_category.xls" Then
+        Range("D9").Select
+    Else
+        Range("C8").Select
+    End If
+    Selection.ShowDetail = True
+Call SaveInSummary
+End Sub
+Sub SaveInSummary()
+'
+' Save the raw data to Summary excel
+'
+'
+
+    Dim classeur1 As Excel.Workbook
+    Dim classeur2 As Excel.Workbook
+
+    Set classeur1 = Workbooks.Open("C:\Users\klein\Documents\Pru Project\Pivottable_Sample\rawdata.xls")
+    Set classeur2 = ThisWorkbook
+
+    classeur2.ActiveSheet.Copy after:=classeur1.Sheets(Workbooks("rawdata.xls").Worksheets.Count)
+    'need change
+    Dim a As String
+    a = Left(classeur2.Name, Len(classeur2.Name) - 4)
+    classeur1.ActiveSheet.Name = a
+    Workbooks("rawdata.xls").Close (True)
+
+End Sub
+
